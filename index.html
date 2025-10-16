@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" ></script>
+</head>
+<body>
+    <h1>
+        Hello, World!
+    </h1>
+
+    <h2 id="description">This is a simple HTML document</h2>
+
+    <button id="myButton">Click Me!</button>
+
+    <form id="myForm">
+
+<input type="text" id="nombre" placeholder="Enter your name""> <br>
+Longitud: <p id="longitud"></p>
+<input type="submit" value="Submit">
+
+    </form>
+
+    <script>
+        function saludar(event){
+            name = $("#nombre").val()
+            event.preventDefault()  //Es lo mismo que return false
+            alert("¡" + name + " es lo más supermegaguay!")
+        }
+
+        function cambiarColor(){
+            $("#description").css("color","blue")
+            $("#description").text("¡Se ha cambiado el color a azul!")
+        }
+
+        function attachEvents(){
+            $("#myButton").click(cambiarColor)
+            $("#myForm").submit(saludar)
+            $("#nombre").on("input", function(){
+                var contenido= $("#nombre").val();
+                $("#longitud").text(contenido.length)
+            })
+        }
+        function miFuncion(){
+            console.log("jQuery verison:", $.fn.jquery);
+            attachEvents()
+        }
+        function miPrograma(){
+            console.log("jQuery is working")
+            miFuncion()
+        }
+
+        $(document).ready(miPrograma)
+    </script>
+</body>
+</html>
