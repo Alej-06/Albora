@@ -4,74 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 <div id="output"></div>
 
     <script>
 document.addEventListener("DOMContentLoaded", function(){
-
-function callbackError(mensaje) {
-    console.error("Ocurrió un error", mensaje);
-}
-
-function renderUsers(users) {
-    // Construir tabla de usuarios una sola vez
-    let tabla = "<table border='1'><tr><th>ID</th><th>Nombre</th><th>Email</th></tr>";
-    users.forEach(usuario => {
-        tabla += `<tr data-userid="${usuario.id}"><td>${usuario.id}</td><td>${usuario.name}</td><td>${usuario.email}</td></tr>`;
-    });
-    tabla += "</table>";
-    document.getElementById("output").innerHTML = tabla;
-}
-
-function renderPostsForUser(userId, userName, posts) {
-    // Tabla de posts para un usuario concreto
-    let tablaPosts = `<h4>Posts de ${userName} (ID ${userId})</h4>`;
-    tablaPosts += "<table border='1'><tr><th>ID</th><th>Título</th><th>Contenido</th></tr>";
-    posts.forEach(post => {
-        tablaPosts += `<tr><td>${post.id}</td><td>${post.title}</td><td>${post.body}</td></tr>`;
-    });
-    tablaPosts += "</table>";
-    // Añadir al final (o cambiar según preferencia)
-    document.getElementById("output").innerHTML += tablaPosts;
-}
-
-// Petición principal de usuarios
-$.ajax({
-    url: "https://jsonplaceholder.typicode.com/users",
-    method: "GET",
-    dataType: "json",
-    success: function(users) {
-        renderUsers(users);
-
-        // Para cada usuario, pedir sus posts (usar la ruta correcta /users/{id}/posts)
-        users.forEach(function(usuario) {
-            $.ajax({
-                url: `https://jsonplaceholder.typicode.com/users/${usuario.id}/posts`,
-                method: "GET",
-                dataType: "json",
-                success: function(posts) {
-                    // No llamar a callbackExito aquí; renderizar posts directamente
-                    renderPostsForUser(usuario.id, usuario.name, posts);
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    const mensaje = `Error posts user ${usuario.id}: ${textStatus} - ${errorThrown}`;
-                    callbackError(mensaje);
-                }
-            });
-        });
-    },
-    error: function(jqXHR, textStatus, errorThrown) {
-        const mensaje = `Error users: ${textStatus} - ${errorThrown}`;
-        callbackError(mensaje);
+    function callbackError(mensaje) {
+        console.error("Ocurrió un error", mensaje);
     }
-});
 
-console.log("Fin de la configuración AJAX");
+    // Obtener usuarios y luego sus posts usando fetch (ruta correcta: /users/{id}/posts)
+    fetch("https://jsonplaceholder.typicode.com/users")
+        .then(response => {
+            if (!response.ok) throw new Error(response.statusText);
+            return response.json();
+        })
+        .then(users => {
+            console.log("Datos de usuarios recibidos:", users);
+            const output = document.getElementById("output");
 
+            // Crear promesas por cada usuario para obtener sus posts
+            const promises = users.map(usuario => {
+                return fetch(`https://jsonplaceholder.typicode.com/users/${usuario.id}/posts`)
+                    .then(resp => {
+                        if (!resp.ok) throw new Error(resp.statusText);
+                        return resp.json();
+                    })
+                    .then(posts => {
+                        let userHtml = "<br><br>";
+                        userHtml += `<b>USUARIO: ${usuario.id} - ${usuario.name} - ${usuario.email} </b><br>`;
+                        userHtml += "<ol>";
+                        posts.forEach(post => {
+                            userHtml += `<li>${post.title}</li>`;
+                            userHtml += ` ${post.body} <br>`;
+                        });
+                        userHtml += "</ol><br>";
+                        return userHtml;
+                    })
+                    .catch(err => {
+                        callbackError(`Error posts user ${usuario.id}: ${err}`);
+                        return ""; // continuar con los demás usuarios
+                    });
+            });
+
+            Promise.all(promises).then(htmlParts => {
+                output.innerHTML = htmlParts.join("");
+                console.log("Datos procesados y tabla construida.");
+            });
+        })
+        .catch(err => {
+            callbackError(err);
+        });
 });
     </script>
+    
+
+    <!-- jQuery cargado después del script (causa que $ sea undefined al ejecutarse) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </body>
 </html>
