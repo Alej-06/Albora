@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Callbacks en JavaScript</title>
+</head>
+<body>
+    <h1>Callbacks en JavaScript</h1>
+<button id="miBoton">Haz click aquí</button>
+
+    <script>
+
+        function miFuncion() {
+            console.log("Esto se ejecuta después de 2 segundos");
+        }
+
+        function miSaludo(){
+            console.log("Hola, como estás?")
+        }
+
+
+        document.addEventListener("DOMContentLoaded", function(){
+
+            console.log("Inicio")
+
+            setTimeout(miFuncion, 2000);
+
+            document.getElementById("miBoton").addEventListener("click", miSaludo)
+
+            console.log("Fin")
+
+        });
+
+    </script>
+</body>
+</html>
