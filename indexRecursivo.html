@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <h1>Recursividad</h1>
+    <pre id="output"></pre>
+    <script>
+        //factorial recursivo
+        function factorial(n) {
+            if (n === 0 || n === 1) {
+                return 1;
+            } else {
+                return n * factiorial(n - 1);
+            }
+        }
+
+        function contraregresivo(numero) {
+            if (numero <= 0) {
+                document.getElementById("output").innerHTML += "¡Despegue!";
+            } else {
+                document.getElementById("output").innerHTML += numero + "\n";
+                contraregresivo(numero - 1);
+                document.getElementById("output").innerHTML += numero + "\n";
+            }
+        }
+        document.addEventListener("DOMContentLoaded", function() {
+             contraregresivo(5);
+            getElementById("output").innerHTML += "El factorial de 5 es: " + factorial(5);
+            getElementById("output").innerHTML += "\nEl factorial de 10 es: " + factorial(10);
+        });
+    </script>
+</body>
+</html>
